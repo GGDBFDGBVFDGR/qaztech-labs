@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QazTech — №4 Risk Matrix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0c1a1f;
+      --ink-soft: #1a333c;
+      --paper: #f2f7f5;
+      --muted: #5a737a;
+      --line: rgba(12, 26, 31, 0.12);
+      --accent: #0d8a6a;
+      --accent-deep: #066b52;
+      --warn: #c45c26;
+      --sky: #1a7a8c;
+      --glow: rgba(13, 138, 106, 0.18);
+      --slide-pad: clamp(1.6rem, 4.2vw, 3.75rem);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 112.5%;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--ink);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      overflow: hidden;
+    }
+
+    .deck {
+      height: 100%;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      padding: var(--slide-pad);
+      padding-bottom: calc(var(--slide-pad) + 3.5rem);
+      overflow: auto;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      background:
+        radial-gradient(ellipse 80% 50% at 100% 0%, var(--glow), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 0% 100%, rgba(26, 122, 140, 0.12), transparent 50%),
+        linear-gradient(165deg, #eef6f3 0%, #f7faf9 42%, #e8f1ee 100%);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(12, 26, 31, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(12, 26, 31, 0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+    }
+
+    .slide.is-active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+      z-index: 1;
+    }
+
+    .slide.hero {
+      background:
+        radial-gradient(ellipse 70% 60% at 85% 20%, rgba(13, 138, 106, 0.35), transparent 55%),
+        radial-gradient(ellipse 50% 45% at 10% 80%, rgba(26, 122, 140, 0.28), transparent 50%),
+        linear-gradient(145deg, #061316 0%, #0c1a1f 45%, #123028 100%);
+      color: var(--paper);
+    }
+
+    .slide.hero::before {
+      background-image:
+        linear-gradient(rgba(242, 247, 245, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(242, 247, 245, 0.04) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
+    }
+
+    .brand {
+      font-family: Outfit, sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.7rem, 6.5vw, 4.6rem);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      position: relative;
+    }
+
+    .brand span { color: #3dceaa; }
+
+    .eyebrow {
+      font-family: Outfit, sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.85rem;
+      position: relative;
+    }
+
+    .hero .eyebrow { color: #7ed9c0; }
+
+    h1, h2 {
+      font-family: Outfit, sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      position: relative;
+    }
+
+    h1 { font-size: clamp(1.9rem, 4vw, 2.85rem); max-width: 18ch; }
+    h2 { font-size: clamp(1.6rem, 3.2vw, 2.35rem); margin-bottom: 1.25rem; }
+
+    .lede {
+      margin-top: 1.1rem;
+      font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      max-width: 42rem;
+      color: var(--muted);
+      position: relative;
+    }
+
+    .hero .lede { color: rgba(242, 247, 245, 0.78); }
+
+    .hero-meta {
+      margin-top: auto;
+      padding-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem 2.5rem;
+      position: relative;
+      font-size: 0.95rem;
+      color: rgba(242, 247, 245, 0.7);
+    }
+
+    .hero-meta strong {
+      display: block;
+      color: #fff;
+      font-family: Outfit, sans-serif;
+      font-size: 1.15rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .content {
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      min-height: 0;
+    }
+
+    .chain {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
+      list-style: none;
+    }
+
+    @media (max-width: 900px) {
+      .chain { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .chain li {
+      margin: 0;
+      animation: rise 0.55s ease both;
+    }
+
+    .chain li:nth-child(1) { animation-delay: 0.05s; }
+    .chain li:nth-child(2) { animation-delay: 0.1s; }
+    .chain li:nth-child(3) { animation-delay: 0.15s; }
+    .chain li:nth-child(4) { animation-delay: 0.2s; }
+    .chain li:nth-child(5) { animation-delay: 0.25s; }
+    .chain li:nth-child(6) { animation-delay: 0.3s; }
+    .chain li:nth-child(7) { animation-delay: 0.35s; }
+    .chain li:nth-child(8) { animation-delay: 0.4s; }
+
+    .chain button {
+      width: 100%;
+      height: 100%;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--line);
+      padding: 0.9rem 0.95rem;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      position: relative;
+    }
+
+    .chain button:hover,
+    .chain button:focus-visible {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.9);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    .chain button::after {
+      content: "＋";
+      position: absolute;
+      top: 0.65rem;
+      right: 0.7rem;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .chain .num {
+      font-family: Outfit, sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.35rem;
+      padding-right: 1.2rem;
+    }
+
+    .chain p {
+      font-size: 0.82rem;
+      line-height: 1.35;
+      color: var(--ink-soft);
+    }
+
+    .tap-hint {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: -0.35rem;
+    }
+
+    .tap-hint em {
+      font-style: normal;
+      color: var(--accent-deep);
+      font-weight: 600;
+    }
+
+    /* Accordion */
+    .acc {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      flex: 1;
+    }
+
+    .acc details {
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--line);
+      animation: rise 0.45s ease both;
+    }
+
+    .acc details:nth-child(1) { animation-delay: 0.05s; }
+    .acc details:nth-child(2) { animation-delay: 0.1s; }
+    .acc details:nth-child(3) { animation-delay: 0.15s; }
+    .acc details:nth-child(4) { animation-delay: 0.2s; }
+    .acc details:nth-child(5) { animation-delay: 0.25s; }
+    .acc details:nth-child(6) { animation-delay: 0.3s; }
+    .acc details:nth-child(7) { animation-delay: 0.35s; }
+
+    .acc summary {
+      list-style: none;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 2.2rem 1fr auto;
+      gap: 0.65rem;
+      align-items: start;
+      padding: 0.85rem 1rem;
+      font-family: Outfit, sans-serif;
+      font-weight: 600;
+      font-size: 0.98rem;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .acc summary::-webkit-details-marker { display: none; }
+
+    .acc summary .n {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .acc.delta summary {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .acc.delta .n {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      font-size: 0.92rem;
+      line-height: 1;
+      padding: 0.35rem 0.5rem;
+      background: rgba(13, 138, 106, 0.12);
+    }
+
+    .acc.delta .chev {
+      margin-left: auto;
+      margin-top: 0;
+    }
+
+    .acc.delta .panel {
+      padding-left: 1rem;
+    }
+
+    .acc summary .chev {
+      color: var(--accent);
+      font-size: 0.9rem;
+      transition: transform 0.25s ease;
+      margin-top: 0.15rem;
+    }
+
+    .acc details[open] summary .chev {
+      transform: rotate(45deg);
+    }
+
+    .acc .panel {
+      padding: 0 1rem 1rem 3.85rem;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: var(--muted);
+      border-top: 1px solid transparent;
+    }
+
+    .acc details[open] .panel {
+      border-top-color: var(--line);
+      padding-top: 0.75rem;
+      margin-top: 0;
+    }
+
+    .acc .panel strong { color: var(--ink-soft); }
+
+    /* SWOT clickable */
+    .swot details {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .swot summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1rem 1.15rem;
+      font-family: Outfit, sans-serif;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .swot summary::-webkit-details-marker { display: none; }
+
+    .swot summary em {
+      font-style: normal;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .swot summary .chev {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .swot details[open] summary .chev { transform: rotate(45deg); display: inline-block; }
+
+    .swot .body {
+      padding: 0 1.15rem 1.1rem;
+    }
+
+    .swot ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.9rem;
+      color: var(--ink-soft);
+      margin-bottom: 0.75rem;
+    }
+
+    .swot li::before {
+      content: "· ";
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .swot .why {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--muted);
+      padding-top: 0.65rem;
+      border-top: 1px solid var(--line);
+    }
+
+    /* CIA expandable */
+    .cia details {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .cia summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1rem 1.1rem;
+      font-family: Outfit, sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cia summary::-webkit-details-marker { display: none; }
+
+    .cia .more {
+      padding: 0 1.1rem 1rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    /* Modal */
+    .modal[hidden] {
+      display: none !important;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(6, 19, 22, 0.72);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      width: min(560px, 100%);
+      max-height: min(80vh, 640px);
+      overflow: auto;
+      background: linear-gradient(165deg, #f7faf9, #eef6f3);
+      border: 1px solid rgba(242, 247, 245, 0.2);
+      padding: 1.5rem 1.6rem 1.4rem;
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+
+    .modal.is-open .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-card .lab-num {
+      font-family: Outfit, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+
+    .modal-card h3 {
+      font-family: Outfit, sans-serif;
+      font-size: 1.45rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .modal-card .meta {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .modal-card .meta div {
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .modal-card .meta h4 {
+      font-family: Outfit, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      margin-bottom: 0.35rem;
+    }
+
+    .modal-card .meta p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--ink-soft);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 0.85rem;
+      right: 0.85rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      color: var(--ink);
+      font-family: Outfit, sans-serif;
+    }
+
+    .modal-close:hover {
+      border-color: var(--accent);
+      color: var(--accent-deep);
+    }
+
+    .stake-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      overflow: auto;
+    }
+
+    .stake-list details {
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--line);
+      animation: rise 0.4s ease both;
+    }
+
+    .stake-list summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 0.8rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      font-family: Outfit, sans-serif;
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+
+    .stake-list summary::-webkit-details-marker { display: none; }
+
+    .stake-list summary .chev { color: var(--accent); font-weight: 700; }
+    .stake-list details[open] summary .chev { display: inline-block; transform: rotate(45deg); }
+
+    .stake-list .panel {
+      padding: 0 1rem 1rem;
+      display: grid;
+      gap: 0.55rem;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding-top: 0.75rem;
+    }
+
+    .stake-list .panel b {
+      color: var(--accent-deep);
+      font-family: Outfit, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.15rem;
+      font-weight: 700;
+    }
+
+    .flow-note {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      padding: 0.85rem 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .flow-note .arrow {
+      font-family: Outfit, sans-serif;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .case-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1.5rem 2rem;
+      flex: 1;
+    }
+
+    @media (max-width: 800px) {
+      .case-grid { grid-template-columns: 1fr; }
+    }
+
+    .case-block h3 {
+      font-family: Outfit, sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      margin-bottom: 0.65rem;
+    }
+
+    .case-block ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .case-block li {
+      padding-left: 1rem;
+      border-left: 2px solid var(--accent);
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: var(--ink-soft);
+      animation: rise 0.5s ease both;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat {
+      animation: rise 0.5s ease both;
+    }
+
+    .stat b {
+      font-family: Outfit, sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--accent-deep);
+      display: block;
+      line-height: 1;
+    }
+
+    .stat span {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.4fr 0.8fr;
+      gap: 1.5rem;
+      align-items: start;
+      align-content: start;
+    }
+
+    .two-col .table-wrap {
+      flex: none;
+      overflow: visible;
+      border-top: 1px solid var(--line);
+    }
+
+    .two-col table {
+      min-width: 0;
+    }
+
+    .two-col tr.low td { background: rgba(13, 138, 106, 0.16); }
+    .two-col tr.med td { background: rgba(26, 122, 140, 0.16); }
+    .two-col tr.high td { background: rgba(196, 92, 38, 0.18); }
+    .two-col tr.crit td { background: rgba(139, 58, 74, 0.16); }
+
+    @media (max-width: 800px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    .theory-box {
+      padding: 1.1rem 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .theory-box p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      max-width: 52rem;
+    }
+
+    .cia {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    @media (max-width: 700px) {
+      .cia { grid-template-columns: 1fr; }
+    }
+
+    .cia details {
+      background: rgba(255, 255, 255, 0.6);
+      border-top: 3px solid var(--accent);
+      animation: rise 0.5s ease both;
+    }
+
+    .cia details:nth-child(2) { border-top-color: var(--sky); animation-delay: 0.08s; }
+    .cia details:nth-child(3) { border-top-color: var(--warn); animation-delay: 0.16s; }
+
+    .swot {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 0.7rem;
+      flex: 1;
+    }
+
+    @media (max-width: 700px) {
+      .swot { grid-template-columns: 1fr; }
+    }
+
+    .swot details {
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--line);
+      animation: rise 0.5s ease both;
+    }
+
+    .swot details:nth-child(1) { border-left: 4px solid var(--accent); }
+    .swot details:nth-child(2) { border-left: 4px solid var(--warn); animation-delay: 0.08s; }
+    .swot details:nth-child(3) { border-left: 4px solid var(--sky); animation-delay: 0.16s; }
+    .swot details:nth-child(4) { border-left: 4px solid #8b3a4a; animation-delay: 0.24s; }
+
+    .tasks {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      counter-reset: task;
+    }
+
+    .tasks li {
+      counter-increment: task;
+      display: grid;
+      grid-template-columns: 2.2rem 1fr;
+      gap: 0.75rem;
+      align-items: start;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: var(--ink-soft);
+      animation: rise 0.45s ease both;
+    }
+
+    .tasks li:nth-child(1) { animation-delay: 0.05s; }
+    .tasks li:nth-child(2) { animation-delay: 0.1s; }
+    .tasks li:nth-child(3) { animation-delay: 0.15s; }
+    .tasks li:nth-child(4) { animation-delay: 0.2s; }
+    .tasks li:nth-child(5) { animation-delay: 0.25s; }
+
+    .tasks li::before {
+      content: counter(task);
+      font-family: Outfit, sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent);
+      line-height: 1.35;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      flex: 1;
+      border-top: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      min-width: 520px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      line-height: 1.4;
+    }
+
+    th {
+      font-family: Outfit, sans-serif;
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.4);
+      position: sticky;
+      top: 0;
+    }
+
+    tbody tr { animation: rise 0.4s ease both; }
+    tbody tr:nth-child(1) { animation-delay: 0.05s; }
+    tbody tr:nth-child(2) { animation-delay: 0.1s; }
+    tbody tr:nth-child(3) { animation-delay: 0.15s; }
+    tbody tr:nth-child(4) { animation-delay: 0.2s; }
+    tbody tr:nth-child(5) { animation-delay: 0.25s; }
+    tbody tr:nth-child(6) { animation-delay: 0.3s; }
+    tbody tr:nth-child(7) { animation-delay: 0.35s; }
+
+    .outcomes {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .outcomes .acc {
+      overflow: auto;
+    }
+
+    .outcomes .insight {
+      margin-top: 0.25rem;
+    }
+
+    .insight {
+      padding: 1.15rem 1.25rem;
+      background: var(--ink);
+      color: var(--paper);
+      align-self: stretch;
+      animation: rise 0.55s ease both;
+    }
+
+    .insight h3 {
+      font-family: Outfit, sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #7ed9c0;
+      margin-bottom: 0.65rem;
+    }
+
+    .insight p {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: rgba(242, 247, 245, 0.85);
+    }
+
+    .sample-block {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .sample-block p {
+      margin: 0;
+    }
+
+    .sample-block .label {
+      font-family: Outfit, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .mini-table th,
+    .mini-table td {
+      text-align: left;
+      padding: 0.4rem 0.45rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      line-height: 1.35;
+    }
+
+    .mini-table th {
+      font-family: Outfit, sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .swot-mini {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 600px) {
+      .swot-mini { grid-template-columns: 1fr; }
+    }
+
+    .swot-mini div {
+      padding: 0.55rem 0.65rem;
+      background: rgba(255, 255, 255, 0.45);
+      border-left: 3px solid var(--accent);
+    }
+
+    .swot-mini div:nth-child(2) { border-left-color: var(--warn); }
+    .swot-mini div:nth-child(3) { border-left-color: var(--sky); }
+    .swot-mini div:nth-child(4) { border-left-color: #8b3a4a; }
+
+    .swot-mini b {
+      display: block;
+      font-family: Outfit, sans-serif;
+      font-size: 0.78rem;
+      margin-bottom: 0.25rem;
+      color: var(--ink);
+    }
+
+    .qa {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      flex: 1;
+    }
+
+    .qa li {
+      display: grid;
+      grid-template-columns: 2.4rem 1fr;
+      gap: 0.55rem 0.75rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--line);
+      animation: rise 0.45s ease both;
+    }
+
+    .qa li:nth-child(1) { animation-delay: 0.05s; }
+    .qa li:nth-child(2) { animation-delay: 0.1s; }
+    .qa li:nth-child(3) { animation-delay: 0.15s; }
+
+    .qa .qn {
+      font-family: Outfit, sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--accent);
+      grid-row: 1 / 3;
+      line-height: 1.35;
+    }
+
+    .qa .q {
+      font-family: Outfit, sans-serif;
+      font-weight: 600;
+      font-size: 0.98rem;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .qa .a {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .qa .a strong {
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem var(--slide-pad);
+      background: rgba(6, 19, 22, 0.92);
+      backdrop-filter: blur(10px);
+      color: rgba(242, 247, 245, 0.75);
+      font-size: 0.82rem;
+    }
+
+    .nav-btns {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .nav button,
+    .nav a.menu-link {
+      font-family: Outfit, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(242, 247, 245, 0.2);
+      background: transparent;
+      color: var(--paper);
+      padding: 0.45rem 0.9rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .nav button:hover:not(:disabled),
+    .nav a.menu-link:hover {
+      background: rgba(61, 206, 170, 0.15);
+      border-color: #3dceaa;
+    }
+
+    .nav button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .progress {
+      flex: 1;
+      max-width: 220px;
+      height: 3px;
+      background: rgba(242, 247, 245, 0.15);
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      background: #3dceaa;
+      transition: width 0.35s ease;
+    }
+
+    .hint {
+      opacity: 0.55;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 600px) {
+      .hint { display: none; }
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide.is-active .brand,
+    .slide.is-active h1 {
+      animation: rise 0.55s ease both;
+    }
+
+    .slide.is-active .lede,
+    .slide.is-active .eyebrow {
+      animation: rise 0.55s ease 0.08s both;
+    }
+
+    .chain button.is-here {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .kinds, .levels {
+      display: grid;
+      gap: 0.7rem;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .kinds { grid-template-columns: repeat(3, 1fr); }
+    .levels { grid-template-columns: repeat(4, 1fr); }
+
+    @media (max-width: 900px) {
+      .kinds, .levels { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .kinds, .levels { grid-template-columns: 1fr; }
+    }
+
+    .kinds details, .levels details {
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      animation: rise 0.5s ease both;
+    }
+
+    .kinds details:nth-child(1),
+    .levels details:nth-child(1) { border-left: 4px solid var(--accent); }
+    .kinds details:nth-child(2),
+    .levels details:nth-child(2) { border-left: 4px solid var(--sky); animation-delay: 0.06s; }
+    .kinds details:nth-child(3),
+    .levels details:nth-child(3) { border-left: 4px solid var(--warn); animation-delay: 0.12s; }
+    .kinds details:nth-child(4) { border-left: 4px solid #8b3a4a; animation-delay: 0.18s; }
+    .levels details:nth-child(4) { border-left: 4px solid #8b3a4a; animation-delay: 0.18s; }
+    .kinds details:nth-child(5) { border-left: 4px solid var(--accent-deep); animation-delay: 0.24s; }
+    .kinds details:nth-child(6) { border-left: 4px solid var(--ink-soft); animation-delay: 0.3s; }
+
+    .kinds summary, .levels summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 0.9rem 1rem;
+      font-family: Outfit, sans-serif;
+      font-weight: 700;
+      font-size: 0.98rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .kinds summary::-webkit-details-marker,
+    .levels summary::-webkit-details-marker { display: none; }
+
+    .kinds summary .chev, .levels summary .chev {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .kinds details[open] summary .chev,
+    .levels details[open] summary .chev { transform: rotate(45deg); display: inline-block; }
+
+    .kinds .body, .levels .body {
+      padding: 0 1rem 0.95rem;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .levels .ex {
+      margin-top: 0.45rem;
+      color: var(--ink-soft);
+    }
+
+    .scale {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.35rem;
+    }
+
+    .scale div {
+      background: rgba(255, 255, 255, 0.55);
+      border-top: 3px solid var(--accent);
+      padding: 0.55rem 0.7rem;
+    }
+
+    .scale b {
+      font-family: Outfit, sans-serif;
+      font-size: 1.15rem;
+      color: var(--accent-deep);
+      display: block;
+      line-height: 1;
+    }
+
+    .scale span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    table.dense {
+      font-size: 0.78rem;
+      min-width: 920px;
+    }
+
+    table.dense th, table.dense td {
+      padding: 0.42rem 0.5rem;
+    }
+
+    tr.top td {
+      background: rgba(13, 138, 106, 0.1);
+    }
+
+    tr.top td:first-child {
+      box-shadow: inset 3px 0 0 var(--accent);
+      font-family: Outfit, sans-serif;
+      font-weight: 700;
+      color: var(--accent-deep);
+    }
+
+    .impact {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .impact b {
+      color: var(--accent-deep);
+      font-family: Outfit, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.12rem;
+    }
+
+
+    .mx {
+      display: grid;
+      grid-template-columns: 3.4rem repeat(5, 1fr);
+      gap: 0.35rem;
+      align-content: start;
+    }
+    .mx div {
+      min-height: 3.1rem;
+      padding: 0.35rem 0.4rem;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--line);
+      font-size: 0.72rem;
+      line-height: 1.25;
+    }
+    .mx .ax {
+      background: transparent;
+      border: none;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Outfit, sans-serif;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .mx b { font-family: Outfit, sans-serif; font-size: 0.78rem; }
+    .mx .low { background: rgba(13, 138, 106, 0.16); }
+    .mx .med { background: rgba(26, 122, 140, 0.16); }
+    .mx .high { background: rgba(196, 92, 38, 0.18); }
+    .mx .crit { background: rgba(139, 58, 74, 0.16); }
+    .legend { display: flex; flex-wrap: wrap; gap: 0.7rem 1.1rem; font-size: 0.78rem; color: var(--muted); }
+    .legend i { display: inline-block; width: 0.7rem; height: 0.7rem; margin-right: 0.3rem; vertical-align: -0.05rem; }
+    .legend .low { background: rgba(13, 138, 106, 0.7); }
+    .legend .med { background: rgba(26, 122, 140, 0.75); }
+    .legend .high { background: rgba(196, 92, 38, 0.8); }
+    .legend .crit { background: rgba(139, 58, 74, 0.75); }
+    .calc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+    @media (max-width: 800px) { .calc { grid-template-columns: 1fr 1fr; } }
+    .calc div { background: rgba(255,255,255,0.55); border-top: 3px solid var(--accent); padding: 0.7rem 0.8rem; }
+    .calc b { display: block; font-family: Outfit, sans-serif; font-size: 1.05rem; color: var(--accent-deep); line-height: 1.2; }
+    .calc span { font-size: 0.75rem; color: var(--muted); }
+
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+
+    <section class="slide hero is-active" data-title="Бастау">
+      <p class="eyebrow">Ақпараттық қауіпсіздік · зертханалық жұмыс №4</p>
+      <h1 class="brand">Qaz<span>Tech</span></h1>
+      <p class="lede">Тәуекелді бағалау — №3 сценарийлеріне Likelihood пен Impact қойып, Risk = L × I және 5×5 матрица құру.</p>
+      <div class="hero-meta">
+        <div><strong>Кіріс · №3</strong>12 қауіп сценарийі</div>
+        <div><strong>№4 фокус</strong>Risk Register және матрица</div>
+        <div><strong>Шығыс · №5</strong>High / Critical → treatment</div>
+      </div>
+    </section>
+    <section class="slide" data-title="Жұмыстар тізбегі">
+      <p class="eyebrow">Жалпы логика</p>
+      <h2>Сегіз жұмыс — бір үздіксіз тізбек</h2>
+      <div class="content">
+        <p class="flow-note"><span class="arrow">1 → 2 → … → 8</span><span>Қазіргі жұмыс — 04. Алдыңғы нәтиже осы жұмыстың кірісі.</span></p>
+        <p class="tap-hint">Әр жұмысты <em>басыңыз</em> — қысқаша байланыс ашылады</p>
+        <ol class="chain"><li><button type="button" data-lab="1"><div class="num">01</div><p>Ұйым контексті және ISMS Scope</p></button></li><li><button type="button" data-lab="2"><div class="num">02</div><p>Asset Register және CIA бағасы</p></button></li><li><button type="button" data-lab="3"><div class="num">03</div><p>Threat &amp; Vulnerability Register</p></button></li><li><button type="button" class="is-here" data-lab="4"><div class="num">04</div><p>Risk Register және 5×5 Risk Matrix</p></button></li><li><button type="button" data-lab="5"><div class="num">05</div><p>Risk Treatment Plan</p></button></li><li><button type="button" data-lab="6"><div class="num">06</div><p>Information Security Policy</p></button></li><li><button type="button" data-lab="7"><div class="num">07</div><p>Incident Response Report</p></button></li><li><button type="button" data-lab="8"><div class="num">08</div><p>Internal ISMS Audit Report</p></button></li></ol>
+      </div>
+    </section>
+    <section class="slide" data-title="№4 мақсат">
+      <p class="eyebrow">№4 зертханалық жұмыс</p>
+      <h2>Ақпараттық қауіпсіздік тәуекелдерін бағалау</h2>
+      <div class="content">
+        <div class="theory-box"><p><strong>Мақсат:</strong> тәуекел ықтималдығы мен әсерін бағалау, Risk Register және 5×5 Risk Matrix құру, қалдық тәуекелді есептеу. <strong>Risk = Likelihood × Impact.</strong></p></div>
+        <div class="two-col">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Балл</th><th>Likelihood</th><th>Impact</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>Өте төмен</td><td>Елеусіз</td></tr>
+                <tr><td>2</td><td>Төмен</td><td>Аз</td></tr>
+                <tr><td>3</td><td>Орташа</td><td>Орташа</td></tr>
+                <tr><td>4</td><td>Жоғары</td><td>Елеулі</td></tr>
+                <tr><td>5</td><td>Өте жоғары</td><td>Критикалық</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Risk score</th><th>Деңгей</th></tr>
+              </thead>
+              <tbody>
+                <tr class="low"><td>1–4</td><td>Low</td></tr>
+                <tr class="med"><td>5–9</td><td>Medium</td></tr>
+                <tr class="high"><td>10–16</td><td>High</td></tr>
+                <tr class="crit"><td>17–25</td><td>Critical</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Тапсырмалар">
+      <p class="eyebrow">Практикалық тапсырмалар</p>
+      <h2>Не істеу керек?</h2>
+      <div class="content">
+        <p class="tap-hint">Тапсырманы <em>басыңыз</em></p>
+        <ul class="acc"><li><details><summary><span class="n">31</span><span>10 сценарийге L және I</span><span class="chev">＋</span></summary><div class="panel">№3-тің 12 сценарийі бағаланды. S01–S03 үлгідегі сандар: 4×5, 3×4, 3×3.</div></details></li><li><details><summary><span class="n">32</span><span>Risk = L × I</span><span class="chev">＋</span></summary><div class="panel">Әр жолда көбейтінді. Мысал: 4 × 5 = 20.</div></details></li><li><details><summary><span class="n">33</span><span>5×5 матрица</span><span class="chev">＋</span></summary><div class="panel">Жоғарыдан L5, солдан оңға I1–I5. Ұяшықтағы сан — сол L мен I көбейтіндісі, ішінде сценарий ID.</div></details></li><li><details><summary><span class="n">34</span><span>High және Critical стратегия</span><span class="chev">＋</span></summary><div class="panel">Avoid, Mitigate, Transfer немесе Accept. Critical үшеуі де Mitigate. S10 өрт — Transfer. S09 Medium — Accept.</div></details></li><li><details><summary><span class="n">35</span><span>Residual кемінде 5</span><span class="chev">＋</span></summary><div class="panel">Шарадан кейінгі L × сол I. S01: 2×5=10. S02: 1×4=4. S03: 2×3=6. S04: 2×4=8. S05: 2×5=10. S06: 1×5=5.</div></details></li><li><details><summary><span class="n">36</span><span>Өзгерісті түсіндіру</span><span class="chev">＋</span></summary><div class="panel">MFA ықтималдықты түсіреді, әсер қалуы мүмкін. Келесі слайдтағы талдау.</div></details></li></ul>
+      </div>
+    </section>
+    <section class="slide" data-title="Risk Register">
+      <p class="eyebrow">Үлгі · 12 тәуекел</p>
+      <h2>Risk Register</h2>
+      <div class="content">
+        <p class="tap-hint">RR = шарадан кейінгі L × бастапқы I. S09 Accept — L өзгермейді. S10 Transfer — оқиға ықтималдығы сол, қаржылық шығын сақтандыруға беріледі.</p>
+        <div class="table-wrap">
+          <table class="dense">
+            <thead><tr><th>ID</th><th>Сценарий</th><th>L</th><th>I</th><th>Risk</th><th>Деңгей</th><th>Стратегия</th><th>Жаңа L</th><th>RR</th><th>Қалдық</th></tr></thead>
+            <tbody><tr><td>S01</td><td>Клиент БҚ ұрлануы</td><td>4</td><td>5</td><td>20</td><td>Critical</td><td>Mitigate</td><td>2</td><td>10</td><td>High</td></tr><tr><td>S02</td><td>Ноутбук жоғалуы</td><td>3</td><td>4</td><td>12</td><td>High</td><td>Mitigate</td><td>1</td><td>4</td><td>Low</td></tr><tr><td>S03</td><td>Сайт тоқтауы</td><td>3</td><td>3</td><td>9</td><td>Medium</td><td>Mitigate</td><td>2</td><td>6</td><td>Medium</td></tr><tr><td>S04</td><td>Email аккаунттың бұзылуы</td><td>5</td><td>4</td><td>20</td><td>Critical</td><td>Mitigate</td><td>2</td><td>8</td><td>Medium</td></tr><tr><td>S05</td><td>AD серверде malware</td><td>4</td><td>5</td><td>20</td><td>Critical</td><td>Mitigate</td><td>2</td><td>10</td><td>High</td></tr><tr><td>S06</td><td>Backup жойылуы</td><td>3</td><td>5</td><td>15</td><td>High</td><td>Mitigate</td><td>1</td><td>5</td><td>Medium</td></tr><tr><td>S07</td><td>Жалған төлем</td><td>3</td><td>5</td><td>15</td><td>High</td><td>Mitigate</td><td>2</td><td>10</td><td>High</td></tr><tr><td>S08</td><td>VPN бұзу</td><td>4</td><td>4</td><td>16</td><td>High</td><td>Mitigate</td><td>2</td><td>8</td><td>Medium</td></tr><tr><td>S09</td><td>Wi‑Fi тыңдау</td><td>3</td><td>3</td><td>9</td><td>Medium</td><td>Accept</td><td>3</td><td>9</td><td>Medium</td></tr><tr><td>S10</td><td>Сервер бөлмесінде өрт</td><td>2</td><td>5</td><td>10</td><td>High</td><td>Transfer</td><td>2</td><td>10</td><td>High</td></tr><tr><td>S11</td><td>Қызметкер деректерінің жылыстауы</td><td>3</td><td>5</td><td>15</td><td>High</td><td>Mitigate</td><td>2</td><td>10</td><td>High</td></tr><tr><td>S12</td><td>Файлдың жойылуы</td><td>3</td><td>4</td><td>12</td><td>High</td><td>Mitigate</td><td>2</td><td>8</td><td>Medium</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-title="Матрица">
+      <p class="eyebrow">Тапсырма 33</p>
+      <h2>5×5 Risk Matrix</h2>
+      <div class="content">
+        <div class="legend"><span><i class="low"></i>1–4 Low</span><span><i class="med"></i>5–9 Medium</span><span><i class="high"></i>10–16 High</span><span><i class="crit"></i>17–25 Critical</span></div>
+        <div class="mx"><div class="ax">L \ I</div><div class="ax">I1</div><div class="ax">I2</div><div class="ax">I3</div><div class="ax">I4</div><div class="ax">I5</div><div class="ax">L5</div><div class="med"><b>5</b></div><div class="high"><b>10</b></div><div class="high"><b>15</b></div><div class="crit"><b>20</b><br>S04</div><div class="crit"><b>25</b></div><div class="ax">L4</div><div class="low"><b>4</b></div><div class="med"><b>8</b></div><div class="high"><b>12</b></div><div class="high"><b>16</b><br>S08</div><div class="crit"><b>20</b><br>S01 S05</div><div class="ax">L3</div><div class="low"><b>3</b></div><div class="med"><b>6</b></div><div class="med"><b>9</b><br>S03 S09</div><div class="high"><b>12</b><br>S02 S12</div><div class="high"><b>15</b><br>S06 S07 S11</div><div class="ax">L2</div><div class="low"><b>2</b></div><div class="low"><b>4</b></div><div class="med"><b>6</b></div><div class="med"><b>8</b></div><div class="high"><b>10</b><br>S10</div><div class="ax">L1</div><div class="low"><b>1</b></div><div class="low"><b>2</b></div><div class="low"><b>3</b></div><div class="low"><b>4</b></div><div class="med"><b>5</b></div></div>
+      </div>
+    </section>
+    <section class="slide" data-title="Қалдық">
+      <p class="eyebrow">Тапсырма 35–36</p>
+      <h2>Неге балл өзгерді</h2>
+      <div class="content">
+        <p class="tap-hint">Жолды <em>басыңыз</em> — неге Likelihood түсті, ал Impact қалды</p>
+        <ul class="acc delta"><li><details><summary><span class="n">20→10</span><span>S01 Клиент БҚ</span><span class="chev">＋</span></summary><div class="panel">L 4→2, I 5 қалды, 2×5=10, Critical→High. Құқықты шектеу ұрлауды сиретеді. Сәтті шыққан көшірменің заңдық зияны сол — сондықтан Impact түспеді.</div></details></li><li><details><summary><span class="n">12→4</span><span>S02 Ноутбук</span><span class="chev">＋</span></summary><div class="panel">L 3→1, I 4 қалды, 1×4=4, High→Low. Есеп үлгісіндегідей ықтималдық төмендетілді. Шифрлау іс жүзінде Impact-ты да түсіруі мүмкін — оны №5-те бөлек көрсетеміз.</div></details></li><li><details><summary><span class="n">9→6</span><span>S03 Сайт</span><span class="chev">＋</span></summary><div class="panel">L 3→2, I 3, 2×3=6, Medium сол деңгейде. Резерв тоқтауды сиретеді, тоқтаса бедел зияны қалады.</div></details></li><li><details><summary><span class="n">20→8</span><span>S04 Фишинг</span><span class="chev">＋</span></summary><div class="panel">MFA L 5→2, I 4 қалды, 2×4=8, Critical→Medium. Аккаунт бәрібір бұзылса, хаттардың зияны өзгермейді.</div></details></li><li><details><summary><span class="n">20→10</span><span>S05 AD malware</span><span class="chev">＋</span></summary><div class="panel">Патч L 4→2, I 5 қалды. Сервер шын мәнінде зақымданса, компания әлі тоқтайды.</div></details></li><li><details><summary><span class="n">15→5</span><span>S06 Backup</span><span class="chev">＋</span></summary><div class="panel">Офлайн көшірме L 3→1, I 5. Жоғалту сирейді. Болып қалса, қалпына келтірмеудің зияны сол.</div></details></li></ul>
+        <aside class="insight"><h3>Талдау</h3><p>MFA көбіне аккаунттың бұзылу ықтималдығын төмендетеді, сондықтан Likelihood азаяды. Бірақ аккаунт бәрібір бұзылса, бизнес-салдар өзгермеуі мүмкін; демек Impact бұрынғы деңгейде қалуы ықтимал.</p></aside>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Сұрақтар">
+      <p class="eyebrow">Бақылау сұрақтары</p>
+      <h2>Өзін-өзі тексеру</h2>
+      <div class="content">
+        <p class="tap-hint">Сұрақты <em>басыңыз</em> — жауап ашылады</p>
+        <ul class="acc"><li><details><summary><span class="n">37</span><span>Risk, Likelihood және Impact</span><span class="chev">＋</span></summary><div class="panel">Risk — қауіптің бізге тигізетін өлшенген қаупі. Likelihood — қаншалықты жиі болуы мүмкін. Impact — болса қаншалықты зиян. Risk = L × I.</div></details></li><li><details><summary><span class="n">38</span><span>Inherent және Residual</span><span class="chev">＋</span></summary><div class="panel">Inherent — шараға дейінгі балл (мысалы S04 = 20). Residual — таңдалған шарадан кейінгі балл (2×4 = 8). Қалдық нөл болуы шарт емес.</div></details></li><li><details><summary><span class="n">39</span><span>Accept қашан орынды?</span><span class="chev">＋</span></summary><div class="panel">Балл ұйымның тәбетінен төмен болса және шара одан қымбат болса. QazTech-та S09 = 9 Medium қабылданды. Critical тәуекелді үнсіз Accept етуге болмайды.</div></details></li><li><details><summary><span class="n">40</span><span>Неге тәуекелді нөлге түсіру тиімсіз?</span><span class="chev">＋</span></summary><div class="panel">Әр келесі балл қымбаттайды. Нөлге жеткізу бизнес тоқтайтын шығын туғызады. Мақсат — критерийге сыйдыру, жою емес.</div></details></li><li><details><summary><span class="n">41</span><span>Risk Matrix не үшін керек?</span><span class="chev">＋</span></summary><div class="panel">Қай сценарийді бірінші өңдеу керектігін бір көріністе көрсетеді. Critical оң жақ жоғарыда — №5 жоспары содан басталады.</div></details></li></ul>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="modal" id="labModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal-card">
+      <button type="button" class="modal-close" id="modalClose" aria-label="Жабу">×</button>
+      <div class="lab-num" id="modalNum"></div>
+      <h3 id="modalTitle"></h3>
+      <div class="meta">
+        <div>
+          <h4>Негізгі нәтиже</h4>
+          <p id="modalResult"></p>
+        </div>
+        <div>
+          <h4>Не істеледі</h4>
+          <p id="modalAbout"></p>
+        </div>
+        <div>
+          <h4>Алдыңғымен байланыс</h4>
+          <p id="modalLink"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav" aria-label="Слайд навигациясы">
+    <div class="nav-btns">
+      <a class="menu-link" href="../index.html">Мәзір</a>
+      <button type="button" id="prevBtn" aria-label="Алдыңғы">← Артқа</button>
+      <button type="button" id="nextBtn" aria-label="Келесі">Алға →</button>
+    </div>
+    <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+    <div id="counter">1 / 10</div>
+    <div class="hint">← → немесе Space</div>
+  </nav>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const counter = document.getElementById("counter");
+    const bar = document.getElementById("bar");
+    const modal = document.getElementById("labModal");
+    const modalClose = document.getElementById("modalClose");
+    let i = 0;
+
+    const labs = {
+      1: {
+        title: "Ұйым контексті және ISMS Scope",
+        result: "Ұйым профилі, мүдделі тараптар, SWOT, ISMS Scope, 3 басым жүйе.",
+        about: "QazTech бизнесін, процестерін, жүйелерін және мүдделі тараптарын талдап, ISMS қолданылу шекарасын анықтайсыз.",
+        link: "Бастапқы жұмыс — кейінгі барлық құжаттар осы контекстке сүйенеді."
+      },
+      2: {
+        title: "Asset Register және CIA бағасы",
+        result: "Активтер тізілімі және әр активтің C/I/A маңыздылығы.",
+        about: "Scope ішіндегі активтерді (жүйе, дерек, адам, құрылғы) тіркеп, құпиялылық/тұтастық/қолжетімділік бойынша бағалайсыз.",
+        link: "№1 Scope пен басым жүйелер — қандай активтерді тіркеу керектігін көрсетеді."
+      },
+      3: {
+        title: "Threat & Vulnerability Register",
+        result: "Қауіптер мен осалдықтар тізілімі.",
+        about: "Әр маңызды активке қатысты қауіптерді (threat) және осалдықтарды (vulnerability) анықтайсыз — фишинг, ransomware, ескі БҚ және т.б.",
+        link: "№2 Asset Register қай активтерге қауіп іздеу керектігін береді."
+      },
+      4: {
+        title: "Risk Register және 5×5 Risk Matrix",
+        result: "Тәуекелдер тізілімі және 5×5 матрицадағы бағалау.",
+        about: "Қауіп × осалдық × актив комбинациясын ықтималдық пен әсер бойынша есептеп, тәуекел деңгейін матрицаға орналастырасыз.",
+        link: "№3 Threat/Vulnerability деректері тәуекелді есептеуге кіріс болады."
+      },
+      5: {
+        title: "Risk Treatment Plan",
+        result: "Тәуекелді өңдеу жоспары (қабылдау, азайту, беру, болдырмау).",
+        about: "Жоғары тәуекелдер үшін шара таңдайсыз: MFA, backup, оқыту, патч және т.б. Жағдай, мерзім, жауапты тұлға көрсетіледі.",
+        link: "№4 Risk Register қай тәуекелдерді бірінші өңдеу керектігін көрсетеді."
+      },
+      6: {
+        title: "Information Security Policy",
+        result: "Ақпараттық қауіпсіздік саясаты.",
+        about: "Treatment шаралары мен Scope негізінде ұйымдық саясат жазасыз: рөлдер, қолжетімділік, инцидент, құпиялылық ережелері.",
+        link: "№1 Scope және №5 Treatment — саясаттың мазмұны мен қолданылу аясын анықтайды."
+      },
+      7: {
+        title: "Incident Response Report",
+        result: "Инцидентке жауап беру есебі / сценарий.",
+        about: "Ықтимал инцидент (мысалы, фишинг немесе ransomware) бойынша анықтау, ұстау, жою, қалпына келтіру қадамдарын құжаттайсыз.",
+        link: "№6 саясат пен №4–5 тәуекелдер инцидент сценарийін таңдауға көмектеседі."
+      },
+      8: {
+        title: "Internal ISMS Audit Report",
+        result: "Ішкі ISMS аудит есебі.",
+        about: "Алдыңғы жұмыстарда жасалған құжаттар мен бақылаулардың сәйкестігін тексеріп, олқылықтар мен ұсыныстарды тіркейсіз.",
+        link: "№1–7 нәтижелері — аудиттің объектісі және дәлел базасы."
+      }
+    };
+
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle("is-active", idx === i));
+      prevBtn.disabled = i === 0;
+      nextBtn.disabled = i === slides.length - 1;
+      counter.textContent = `${i + 1} / ${slides.length}`;
+      bar.style.width = `${((i + 1) / slides.length) * 100}%`;
+      document.title = `QazTech — ${slides[i].dataset.title || "Слайд"}`;
+    }
+
+    function openLab(id) {
+      const lab = labs[id];
+      if (!lab) return;
+      document.getElementById("modalNum").textContent = `Зертханалық жұмыс №${id}`;
+      document.getElementById("modalTitle").textContent = lab.title;
+      document.getElementById("modalResult").textContent = lab.result;
+      document.getElementById("modalAbout").textContent = lab.about;
+      document.getElementById("modalLink").textContent = lab.link;
+      modal.hidden = false;
+      requestAnimationFrame(() => modal.classList.add("is-open"));
+      modalClose.focus();
+    }
+
+    function closeLab() {
+      modal.classList.remove("is-open");
+      setTimeout(() => { modal.hidden = true; }, 280);
+    }
+
+    function modalOpen() {
+      return modal.classList.contains("is-open");
+    }
+
+    prevBtn.addEventListener("click", () => show(i - 1));
+    nextBtn.addEventListener("click", () => show(i + 1));
+
+    document.querySelectorAll("[data-lab]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openLab(btn.dataset.lab);
+      });
+    });
+
+    modalClose.addEventListener("click", closeLab);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeLab();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (modalOpen()) {
+        if (e.key === "Escape") closeLab();
+        if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp", " ", "PageDown", "PageUp"].includes(e.key)) {
+          e.preventDefault();
+        }
+        return;
+      }
+      const tag = (e.target && e.target.tagName) || "";
+      if (["INPUT", "TEXTAREA", "SUMMARY", "BUTTON", "A"].includes(tag) || e.target.closest?.("details")) {
+        if (e.key === " " || e.key === "Enter") return;
+      }
+      if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) {
+        e.preventDefault();
+        show(i + 1);
+      } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) {
+        e.preventDefault();
+        show(i - 1);
+      } else if (e.key === "Home") show(0);
+      else if (e.key === "End") show(slides.length - 1);
+    });
+
+    let touchX = null;
+    document.addEventListener("touchstart", (e) => {
+      if (modalOpen()) return;
+      touchX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    document.addEventListener("touchend", (e) => {
+      if (touchX == null || modalOpen()) return;
+      const dx = e.changedTouches[0].screenX - touchX;
+      if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1));
+      touchX = null;
+    }, { passive: true });
+
+    show(0);
+  </script>
+</body>
+</html>
