@@ -1083,14 +1083,14 @@
         </p>
         <p class="tap-hint">Әр жұмысты <em>басыңыз</em> — толық ақпарат ашылады</p>
         <ol class="chain">
-          <li><button type="button" data-lab="1"><div class="num">01</div><p>Ұйым контексті және ISMS Scope</p></button></li>
-          <li><button type="button" data-lab="2"><div class="num">02</div><p>Asset Register және CIA бағасы</p></button></li>
-          <li><button type="button" data-lab="3"><div class="num">03</div><p>Threat &amp; Vulnerability Register</p></button></li>
-          <li><button type="button" data-lab="4"><div class="num">04</div><p>Risk Register және 5×5 Risk Matrix</p></button></li>
-          <li><button type="button" data-lab="5"><div class="num">05</div><p>Risk Treatment Plan</p></button></li>
-          <li><button type="button" data-lab="6"><div class="num">06</div><p>Information Security Policy</p></button></li>
-          <li><button type="button" data-lab="7"><div class="num">07</div><p>Incident Response Report</p></button></li>
-          <li><button type="button" data-lab="8"><div class="num">08</div><p>Internal ISMS Audit Report</p></button></li>
+          <li><button type="button" data-lab="1"><div class="num">01</div><p>Ұйымның АҚ контексті және ISMS шекарасы</p></button></li>
+          <li><button type="button" data-lab="2"><div class="num">02</div><p>Ақпараттық активтерді түгендеу және жіктеу</p></button></li>
+          <li><button type="button" data-lab="3"><div class="num">03</div><p>Қауіптер мен осалдықтарды анықтау</p></button></li>
+          <li><button type="button" data-lab="4"><div class="num">04</div><p>Ақпараттық қауіпсіздік тәуекелдерін бағалау</p></button></li>
+          <li><button type="button" data-lab="5"><div class="num">05</div><p>Тәуекелдерді өңдеу және шара таңдау</p></button></li>
+          <li><button type="button" data-lab="6"><div class="num">06</div><p>Ақпараттық қауіпсіздік саясатын әзірлеу</p></button></li>
+          <li><button type="button" data-lab="7"><div class="num">07</div><p>Инциденттерді басқару</p></button></li>
+          <li><button type="button" data-lab="8"><div class="num">08</div><p>Аудит және ISMS тиімділігі</p></button></li>
         </ol>
       </div>
     </section>
@@ -1619,49 +1619,49 @@
 
     const labs = {
       1: {
-        title: "Ұйым контексті және ISMS Scope",
+        title: "Ұйымның АҚ контексті және ISMS шекарасы",
         result: "Ұйым профилі, мүдделі тараптар, SWOT, ISMS Scope, 3 басым жүйе.",
         about: "QazTech бизнесін, процестерін, жүйелерін және мүдделі тараптарын талдап, ISMS қолданылу шекарасын анықтайсыз.",
         link: "Бастапқы жұмыс — кейінгі барлық құжаттар осы контекстке сүйенеді."
       },
       2: {
-        title: "Asset Register және CIA бағасы",
+        title: "Ақпараттық активтерді түгендеу және жіктеу",
         result: "Активтер тізілімі және әр активтің C/I/A маңыздылығы.",
         about: "Scope ішіндегі активтерді (жүйе, дерек, адам, құрылғы) тіркеп, құпиялылық/тұтастық/қолжетімділік бойынша бағалайсыз.",
         link: "№1 Scope пен басым жүйелер — қандай активтерді тіркеу керектігін көрсетеді."
       },
       3: {
-        title: "Threat & Vulnerability Register",
+        title: "Қауіптер мен осалдықтарды анықтау",
         result: "Қауіптер мен осалдықтар тізілімі.",
         about: "Әр маңызды активке қатысты қауіптерді (threat) және осалдықтарды (vulnerability) анықтайсыз — фишинг, ransomware, ескі БҚ және т.б.",
         link: "№2 Asset Register қай активтерге қауіп іздеу керектігін береді."
       },
       4: {
-        title: "Risk Register және 5×5 Risk Matrix",
+        title: "Ақпараттық қауіпсіздік тәуекелдерін бағалау",
         result: "Тәуекелдер тізілімі және 5×5 матрицадағы бағалау.",
         about: "Қауіп × осалдық × актив комбинациясын ықтималдық пен әсер бойынша есептеп, тәуекел деңгейін матрицаға орналастырасыз.",
         link: "№3 Threat/Vulnerability деректері тәуекелді есептеуге кіріс болады."
       },
       5: {
-        title: "Risk Treatment Plan",
+        title: "Тәуекелдерді өңдеу және шара таңдау",
         result: "Тәуекелді өңдеу жоспары (қабылдау, азайту, беру, болдырмау).",
         about: "Жоғары тәуекелдер үшін шара таңдайсыз: MFA, backup, оқыту, патч және т.б. Жағдай, мерзім, жауапты тұлға көрсетіледі.",
         link: "№4 Risk Register қай тәуекелдерді бірінші өңдеу керектігін көрсетеді."
       },
       6: {
-        title: "Information Security Policy",
+        title: "Ақпараттық қауіпсіздік саясатын әзірлеу",
         result: "Ақпараттық қауіпсіздік саясаты.",
         about: "Treatment шаралары мен Scope негізінде ұйымдық саясат жазасыз: рөлдер, қолжетімділік, инцидент, құпиялылық ережелері.",
         link: "№1 Scope және №5 Treatment — саясаттың мазмұны мен қолданылу аясын анықтайды."
       },
       7: {
-        title: "Incident Response Report",
+        title: "Инциденттерді басқару",
         result: "Инцидентке жауап беру есебі / сценарий.",
         about: "Ықтимал инцидент (мысалы, фишинг немесе ransomware) бойынша анықтау, ұстау, жою, қалпына келтіру қадамдарын құжаттайсыз.",
         link: "№6 саясат пен №4–5 тәуекелдер инцидент сценарийін таңдауға көмектеседі."
       },
       8: {
-        title: "Internal ISMS Audit Report",
+        title: "Аудит және ISMS тиімділігі",
         result: "Ішкі ISMS аудит есебі.",
         about: "Алдыңғы жұмыстарда жасалған құжаттар мен бақылаулардың сәйкестігін тексеріп, олқылықтар мен ұсыныстарды тіркейсіз.",
         link: "№1–7 нәтижелері — аудиттің объектісі және дәлел базасы."
